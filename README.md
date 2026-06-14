@@ -1,44 +1,50 @@
-n
 # ConcurrentBank: Multi-Process Banking System
 
-מערכת בנקאית מקבילית המבוססת על ריבוי תהליכים וחוטים, המיישמת עקרונות מתקדמים במערכות הפעלה בשפת C.
+A concurrent banking system based on multiple processes and threads, implementing advanced Operating Systems concepts in C.
 
-## 📋 תיאור הפרויקט
-המערכת מדמה סניפי בנק שונים, כאשר כל סניף הוא תהליך נפרד (Process) המבצע עסקאות באמצעות מספר חוטים (Threads). הפרויקט מציג הבנה מעמיקה של:
-- **סנכרון תהליכים:** שימוש ב-Mutexs למניעת Race Conditions וב-Semaphore להגבלת עומס.
-- **תקשורת בין-תהליכית (IPC):** העברת סיכום נתונים מהסניפים לתהליך האב באמצעות Pipes.
-- **ניהול אותות (Signals):** טיפול בסיגנלים לסגירה מסודרת של המערכת.
-- **ניהול זיכרון:** שימוש ב-`mmap` ובמנגנוני Copy-on-Write (COW).
+## 📋 Project Description
+The system simulates various bank branches, where each branch is a separate process executing transactions using multiple threads. The project demonstrates a deep understanding of:
+* **Thread Synchronization:** Using Mutexes to prevent Race Conditions when accessing accounts.
+* **Process Synchronization (Bonus A):** Using a Semaphore to limit the execution load (up to 2 branches running concurrently).
+* **Inter-Process Communication (IPC):** Transferring aggregated data from the child branches to the parent process via Pipes.
+* **Signal Handling:** Managing signals (SIGINT, SIGTERM, SIGCHLD) for graceful shutdown and zombie process prevention.
+* **Memory Management:** Utilizing the OS's Copy-on-Write (COW) mechanism after `fork`, and `mmap` for shared memory.
 
-## 🚀 הוראות הרצה
-נדרש להתקין Docker Desktop ו-Docker Compose במערכת.
+## 🚀 Run Instructions
+Requires Docker Desktop and Docker Compose installed on your system.
 
-### 1. בנייה והרצה (מצב תקין)
-כדי להריץ את המערכת עם הגנות (Mutex) וסנכרון מלא:
+### 1. Build and Run (Safe Mode)
+To run the system with Mutex protection and full synchronization:
 ```bash
 docker compose build
-docker compose up
-2. הוכחת Race Condition (ללא נעילות)
-כדי להריץ את המערכת ללא הגנת Mutex ולהדגים את התנגשויות הזיכרון (יש להשתמש בפקודה זו כחלק מההגשה):
+docker compose up 
+```
 
-Bash
-docker compose run bank sh -c "make race && ./bank"
-3. בדיקת לוגים
-לאחר ההרצה, ניתן לצפות ביומן העסקאות שנוצר בתיקיית logs:
+### 2. Race Condition Demonstration (No Locks)
+To run the system under heavy load without Mutex protection, demonstrating memory collisions and race conditions:
+```bash
+docker compose run -e N_TX=100000 bank sh -c "make clean && make race && ./bank"
+```
 
-Bash
+### 3. View Logs
+After a successful run, you can view the transaction log generated in the logs directory:
+```bash
 cat logs/transactions.log
-📂 מבנה הפרויקט
-bank.c: קוד המקור המרכזי של הבנק.
+```
 
-Makefile: הגדרות קימפול (כולל תמיכה במצב NO_LOCK).
+## 📂 Project Structure
+bank.c: Main C source code of the bank.
 
-docker-compose.yml: הגדרות הקונטיינר.
+Makefile: Compilation definitions (including support for NO_LOCK mode).
 
-accounts.txt: בסיס הנתונים של החשבונות.
+Dockerfile: Container environment build instructions.
 
-logs/: תיקיית פלט ליומן העסקאות.
+docker-compose.yml: Container orchestration and environment variable injection.
 
-answers.pdf: קובץ תשובות תיאורטיות וצילומי מסך של הניסויים.
+accounts.txt: Initial account database loaded at startup.
 
-פרויקט זה נבנה עבור מטלה 3 בקורס מערכות הפעלה.
+answers.pdf: Theoretical question answers and experiment screenshots.
+
+logs/: Output directory (mapped to the host) for transaction logs.
+
+This project was built for Assignment 3 in the Operating Systems course.

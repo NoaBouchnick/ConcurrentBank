@@ -8,4 +8,4 @@ services:
     environment:
       - N_BRANCHES=3
       - M_THREADS=5
-      - N_TX=10000
+      - N_TX=20
