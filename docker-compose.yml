@@ -2,6 +2,7 @@ version: '3.8'
 services:
   bank:
     build: .
+    container_name: concurrent_bank
     volumes:
       - ./accounts.txt:/app/accounts.txt
       - ./logs:/app/logs
